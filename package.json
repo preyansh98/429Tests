@@ -9,6 +9,9 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "chai": "^4.2.0",
+    "chai-http": "^4.3.0",
+    "fetch": "^1.1.0",
     "mocha": "^8.2.0",
     "request": "^2.88.2"
   }
