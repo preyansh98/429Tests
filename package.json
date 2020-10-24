@@ -1,0 +1,15 @@
+{
+  "name": "429tests",
+  "version": "1.0.0",
+  "description": "Test suite for ECSE 429",
+  "main": "index.js",
+  "scripts": {
+    "test": "mocha"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "mocha": "^8.2.0",
+    "request": "^2.88.2"
+  }
+}
