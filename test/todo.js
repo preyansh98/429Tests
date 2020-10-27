@@ -4,6 +4,7 @@ let chai = require('chai');
 let chaiHttp = require('chai-http');
 let should = chai.should();
 const { expect } = require('chai');
+const { spawn } = require("child_process");
 
 chai.use(chaiHttp);
 
@@ -39,7 +40,7 @@ const DEFAULT_TODO = {
         }
     ]
 };
-
+let createdTodoId;
 const validTodo = {
     title: "boris nisi ut aliqui",
     doneStatus: false,
@@ -54,8 +55,22 @@ const validTodo = {
     title: ""
   }
 
-  const expectedError = "Invalid Creation: Failed Validation: Not allowed to create with id";
-
+  const delay = ms => new Promise(res => setTimeout(res, ms));
+  
+  before(function() {
+      this.timeout(10000);
+      const server = spawn('java', ["-jar", "./test/runTodoManagerRestAPI-1.5.5.jar"]);
+      return delay(2000);
+  });
+  
+  after(async () => {
+  
+      return new Promise((resolve, reject) => {
+          chai.request(baseUrl)
+              .get("shutdown")
+              .end(() =>resolve())
+      })
+  })
 
 describe('todo', () => {
     describe('GET /todo all todos', () => {
@@ -65,6 +80,7 @@ describe('todo', () => {
                 expect(res.body.todos.includes(DEFAULT_TODO.todos[0]));
                 expect(res.body.todos.includes(DEFAULT_TODO.todos[1]));
             }).catch((err) => {
+                console.log(err);
                 assert.fail();
             })
         })
@@ -75,6 +91,7 @@ describe('todo', () => {
             .then((res) => {
                 expect(res).to.have.status(200);
             }).catch((err) => {
+                console.log(err);
                 assert.fail();
             })
             
@@ -87,7 +104,9 @@ describe('todo', () => {
             .then((res) => {
                 let reponseBody = res.body;
                 expect(reponseBody.id).to.exist;
+                createdTodoId = responseBody.id;
             }).catch((err) => {
+                console.log(err);
                 assert.fail();
             })
         });
@@ -97,7 +116,9 @@ describe('todo', () => {
             .then((res) => {
                 let reponseBody = res.body;
                 expect(reponseBody.id).to.exist;
+                createdTodoId = responseBody.id;
             }).catch((err) => {
+                console.log(err);
                 assert.fail();
             })
         });
@@ -107,6 +128,7 @@ describe('todo', () => {
             .then((res) => {
                 expect(res).to.have.status(400);
             }).catch((err) => {
+                console.log(err);
                 assert.fail();
             })
         });

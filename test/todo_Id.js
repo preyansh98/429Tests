@@ -4,10 +4,13 @@ let chai = require('chai');
 let chaiHttp = require('chai-http');
 let should = chai.should();
 const { expect } = require('chai');
+const { spawn } = require("child_process");
 
 chai.use(chaiHttp);
 
 let baseUrl = "http://localhost:4567/"
+
+const delay = ms => new Promise(res => setTimeout(res, ms));
 
 const DEFAULT_TODO = {
     "todos": [
@@ -47,14 +50,29 @@ const validTodo = {
     description: "ammended description"
   }
 
+before(function() {
+    this.timeout(10000);
+    const server = spawn('java', ["-jar", "./test/runTodoManagerRestAPI-1.5.5.jar"]);
+    return delay(2000);
+});
+
+after(async () => {
+
+    return new Promise((resolve, reject) => {
+        chai.request(baseUrl)
+            .get("shutdown")
+            .end(() =>resolve())
+    })
+})
+
 describe('todo', () => {
     describe('GET /todo:id', () => {
         it('should return a specific todo based on given id', async() => {
             return chai.request(baseUrl).get("todos/1")
             .then((res) => {
-                expect(res).to.have.status(200);
                 expect(res.body.todos.includes(DEFAULT_TODO.todos[1]));
             }).catch((err) => {
+                console.log(err);
                 assert.fail();
             })
         })
@@ -78,7 +96,7 @@ describe('todo', () => {
             }).catch((err) => {
                 assert.fail();
             })
-        })
+        }) 
     });
     describe('PUT /todo:id', () => {
         it('should amend instances of todo with specific ID using put', async() => {
@@ -99,6 +117,15 @@ describe('todo', () => {
             }).catch((err) => {
                 assert.fail();
             })
-        })
+        });
+        it('should not delete a non existing todo instance', async() => {
+            return chai.request(baseUrl).delete("todos/-1")
+            .then((res) => {
+                expect(res).to.have.status(404);
+            }).catch((err) => {
+                console.log(err);
+                assert.fail();
+            })
+        });
     });
 })
