@@ -39,6 +39,8 @@ after(async () => {
     })
 })
 
+let sampleId = 1;
+
 //POST PROJECT
 describe('projects', () => {
     describe('POST /projects: post a project', () => {
@@ -48,7 +50,7 @@ describe('projects', () => {
             .then((res) => {
                 let responseBody = res.body;
                 expect(responseBody.id).to.exist;
-                
+                sampleId = responseBody.id;
             }).catch( (err) => {
                 assert.fail()
             })
@@ -62,8 +64,7 @@ describe('projects', () => {
         it('should return a list of all the projects', async() => {
             return chai.request(baseUrl).get("projects")
             .then((res) => {
-                let projects = res.body;
-                
+                expect(res.body.projects).length.greaterThan(0)
             }).catch( (err) => {
                 assert.fail()
             })
@@ -76,7 +77,7 @@ describe('projects', () => {
     describe('GET /projects/:id : get project by id', () => {
         it('should get the project by an id', async() => {
             //ID 1 will always exist by before clause.
-            return chai.request(baseUrl).get('projects/1')
+            return chai.request(baseUrl).get('projects/' + sampleId)
             .then((res) => {
                 expect(res).to.have.status(200);
                 
@@ -107,10 +108,10 @@ describe('projects', () => {
     describe('GET /projects/:id : delete project by id', () => {
         it('should delete the project by an id', async() => {
             //ID 1 will always exist by before clause.
-            return chai.request(baseUrl).delete('projects/1')
+            return chai.request(baseUrl).delete('projects/' + sampleId)
             .then((res) => {
                 expect(res).to.have.status(200);
-                
+                sampleId--;
             }).catch( (err) => {
                 assert.fail()
             })
@@ -122,7 +123,7 @@ describe('projects', () => {
 describe('projects', () => {
     describe('PUT /projects/:id : amend a specific project by id', () => {
         it('should amend the project by an id with fields provided', async() => {
-            return chai.request(baseUrl).put('projects/1')
+            return chai.request(baseUrl).put('projects/' + sampleId)
             .send({title : "new title"})
             .then((res) => {
                 //check if title changed.

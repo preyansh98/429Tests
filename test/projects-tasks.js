@@ -60,6 +60,36 @@ describe('projects', () => {
         it('should get all tasks from the project id', async() => {
             return chai.request(baseUrl).get('projects/1/tasks')
             .then((res) => {
+                expect(res.body.todos).to.exist;
+            })
+            .catch((err) => {
+                assert.fail()
+            })
+        })
+    })
+})
+
+//DELETE Project Tasks with Project ID and Task ID
+describe('projects', () => {
+    describe('DELETE /projects/:id/tasks/:id: delete all tasks related to a project', () => {
+        it('should delete the link between the project and the task', async() => {
+            return chai.request(baseUrl).delete('projects/1/tasks/1')
+            .then((res) => {
+                expect(res).to.have.status(200)
+            })
+            .catch((err) => {
+                assert.fail()
+            })
+        })
+    })
+})
+
+//HEAD Project Tasks with ID
+describe('projects', () => {
+    describe('HEAD /projects/:id/tasks: headers for all tasks item related to project', () => {
+        it('should return headers for the todo items related to the project', async() => {
+            return chai.request(baseUrl).head('projects/1/tasks')
+            .then((res) => {
                 expect(res).to.have.status(200)
             })
             .catch((err) => {
