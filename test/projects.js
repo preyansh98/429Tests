@@ -4,6 +4,8 @@ let chai = require('chai');
 let chaiHttp = require('chai-http');
 const { expect } = require('chai');
 let should = chai.should();
+const { spawn } = require("child_process");
+const delay = ms => new Promise(res => setTimeout(res, ms));
 
 chai.use(chaiHttp);
 
@@ -41,7 +43,7 @@ after(async () => {
 describe('projects', () => {
     describe('POST /projects: post a project', () => {
         it('should post a project to the database', async() => {
-            chai.request(baseUrl).post('projects')
+            return chai.request(baseUrl).post('projects')
             .send(sampleProject)
             .then((res) => {
                 let responseBody = res.body;
@@ -58,7 +60,7 @@ describe('projects', () => {
 describe('projects', () => {
     describe('GET /projects: get all projects', () => {
         it('should return a list of all the projects', async() => {
-            chai.request(baseUrl).get("projects")
+            return chai.request(baseUrl).get("projects")
             .then((res) => {
                 let projects = res.body;
                 
@@ -74,7 +76,7 @@ describe('projects', () => {
     describe('GET /projects/:id : get project by id', () => {
         it('should get the project by an id', async() => {
             //ID 1 will always exist by before clause.
-            chai.request(baseUrl).get('projects/1')
+            return chai.request(baseUrl).get('projects/1')
             .then((res) => {
                 expect(res).to.have.status(200);
                 
@@ -89,7 +91,7 @@ describe('projects', () => {
 describe('projects', () => {
     describe('HEAD /projects : headers for project', () => {
         it('should return all headers for projects', async () => {
-            chai.request(baseUrl).head('projects')
+            return chai.request(baseUrl).head('projects')
             .then((res) => {
                 expect(res).to.have.status(200);
                 
@@ -105,7 +107,7 @@ describe('projects', () => {
     describe('GET /projects/:id : delete project by id', () => {
         it('should delete the project by an id', async() => {
             //ID 1 will always exist by before clause.
-            await chai.request(baseUrl).delete('projects/1')
+            return chai.request(baseUrl).delete('projects/1')
             .then((res) => {
                 expect(res).to.have.status(200);
                 
@@ -120,7 +122,7 @@ describe('projects', () => {
 describe('projects', () => {
     describe('PUT /projects/:id : amend a specific project by id', () => {
         it('should amend the project by an id with fields provided', async() => {
-            chai.request(baseUrl).put('projects/1')
+            return chai.request(baseUrl).put('projects/1')
             .send({title : "new title"})
             .then((res) => {
                 //check if title changed.

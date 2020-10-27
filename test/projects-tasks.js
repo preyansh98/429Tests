@@ -4,6 +4,8 @@ let chai = require('chai');
 let chaiHttp = require('chai-http');
 const { expect } = require('chai');
 let should = chai.should();
+const { spawn } = require("child_process");
+const delay = ms => new Promise(res => setTimeout(res, ms));
 
 chai.use(chaiHttp);
 
@@ -19,7 +21,7 @@ const sampleProject = {
 
 const sampleTodo = {
     title: "boris nisi ut aliqui",
-    doneStatus: "false",
+    doneStatus: false,
     description: "strud exercitation u"
 }
 
@@ -30,7 +32,6 @@ before(function() {
 });
 
 after(async () => {
-
     return new Promise((resolve, reject) => {
         chai.request(baseUrl)
             .get("shutdown")
@@ -42,12 +43,11 @@ after(async () => {
 describe('projects', () => {
     describe('POST /projects: post a project', () => {
         it('should post a project to the database', async() => {
-            chai.request(baseUrl).post('projects/'+sampleProjectId+'/tasks')
+            return chai.request(baseUrl).post('projects/1/tasks')
             .send(sampleTodo)
             .then( (res) => {
                 expect(res).to.have.status(201);
             }).catch( (err) => {
-                console.log(err);
                 assert.fail();
             })
         })
@@ -56,14 +56,13 @@ describe('projects', () => {
 
 //GET Project Tasks with ID
 describe('projects', () => {
-    describe('GET /projects/:id/mtasks: get all tasks related to a project', () => {
+    describe('GET /projects/:id/tasks: get all tasks related to a project', () => {
         it('should get all tasks from the project id', async() => {
-            chai.request(baseUrl).get('projects/'+sampleProjectId+'/tasks')
+            return chai.request(baseUrl).get('projects/1/tasks')
             .then((res) => {
-                //expect(res)
+                expect(res).to.have.status(200)
             })
             .catch((err) => {
-                console.log(err);
                 assert.fail()
             })
         })
