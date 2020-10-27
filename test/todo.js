@@ -40,7 +40,6 @@ const DEFAULT_TODO = {
         }
     ]
 };
-let createdTodoId;
 const validTodo = {
     title: "boris nisi ut aliqui",
     doneStatus: false,
@@ -75,7 +74,7 @@ const validTodo = {
 describe('todo', () => {
     describe('GET /todo all todos', () => {
         it('should return a list of all the todos', async() => {
-            chai.request(baseUrl).get("todos")
+            return chai.request(baseUrl).get("todos")
             .then((res) => {
                 expect(res.body.todos.includes(DEFAULT_TODO.todos[0]));
                 expect(res.body.todos.includes(DEFAULT_TODO.todos[1]));
@@ -87,7 +86,7 @@ describe('todo', () => {
     });
     describe('HEAD /todo', () => {
         it('should confirm existance of endpoint', async() => {
-            chai.request(baseUrl).head("todos")
+            return chai.request(baseUrl).head("todos")
             .then((res) => {
                 expect(res).to.have.status(200);
             }).catch((err) => {
@@ -99,31 +98,27 @@ describe('todo', () => {
     });
     describe('POST /todo', () => {
         it('should create a new todo with only a title', async() => {
-            chai.request(baseUrl).post("todos")
+            return chai.request(baseUrl).post("todos")
             .send(validSimpleTodo)
             .then((res) => {
-                let reponseBody = res.body;
-                expect(reponseBody.id).to.exist;
-                createdTodoId = responseBody.id;
+                expect(res.body.id).to.exist;
             }).catch((err) => {
                 console.log(err);
                 assert.fail();
             })
         });
         it('should create a new todo with more than the minimal info (status and description)', async() => {
-            chai.request(baseUrl).post("todos")
+            return chai.request(baseUrl).post("todos")
             .send(validTodo)
             .then((res) => {
-                let reponseBody = res.body;
-                expect(reponseBody.id).to.exist;
-                createdTodoId = responseBody.id;
+                expect(res.body.id).to.exist;
             }).catch((err) => {
                 console.log(err);
                 assert.fail();
             })
         });
         it('shouldnt create todo with an invalid title', async() => {
-            chai.request(baseUrl).post("todos")
+            return chai.request(baseUrl).post("todos")
             .send(invalidTitleTodo)
             .then((res) => {
                 expect(res).to.have.status(400);
