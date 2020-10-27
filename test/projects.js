@@ -88,6 +88,34 @@ describe('projects', () => {
     })
 })
 
+//GET Project with line queries successful
+describe('projects', () => {
+    describe('GET /projects/:id: get project and filter by title', () => {
+        it('should get the projects filtered down by title', async() => {
+            return chai.request(baseUrl).get('projects?title='+sampleProject.title)
+            .then((res) => {
+                expect(res.body.projects).to.have.length.greaterThan(0)
+            }).catch((err) => {
+                assert.fail()
+            })
+        })
+    })
+})
+
+//GET Project with line queries unsuccessful
+describe('projects', () => {
+    describe('GET /projects/:id: get project and filter by title', () => {
+        it('should not be able to find projects filtered down by random title', async() => {
+            return chai.request(baseUrl).get('projects?title='+'randomtitle')
+            .then((res) => {
+                expect(res.body.projects).to.be.empty;
+            }).catch((err) => {
+                assert.fail()
+            })
+        })
+    })
+})
+
 //HEAD for PROJECT
 describe('projects', () => {
     describe('HEAD /projects : headers for project', () => {
