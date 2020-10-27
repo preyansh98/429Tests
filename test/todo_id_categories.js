@@ -44,11 +44,9 @@ const DEFAULT_TODO = {
     ]
 };
 
-const validTodo = {
-    title: "ammended title",
-    doneStatus: false,
-    description: "ammended description"
-  }
+const existingCategory = {
+    id:"1"
+}
 
 before(function() {
     this.timeout(10000);
@@ -65,21 +63,49 @@ after(async () => {
     })
 })
 
-describe('todo/:id', () => {
-    describe('GET /todo:id', () => {
-        it('should return a specific todo based on given id', async() => {
-            return chai.request(baseUrl).get("todos/1")
+describe('todo/:id/categories', () => {
+    describe('POST /todo:id/categories', () => {
+        it('should create link between category and todo instance', async() => {
+            return chai.request(baseUrl).post("todos/2/categories")
+            .send(existingCategory)
             .then((res) => {
-                expect(res.body.todos.includes(DEFAULT_TODO.todos[1]));
+                //status confirms creation of link
+                expect(res).to.have.status(201);
             }).catch((err) => {
                 console.log(err);
                 assert.fail();
             })
         })
     });
-    describe('HEAD /todo:id', () => {
+
+    describe("GET todos/:id/categories", () => {
+        it("should return a category items related to todo given id", async () => {
+            return chai.request(baseUrl)
+                .get("todos/1/categories")
+                .then((res) => {
+                    expect(res).to.have.status(200);
+                    assert(res.body.categories[0].id, 1);
+                }).catch(err =>{
+                    console.log(err);
+                    assert.fail();
+                });
+            });
+        it("should confirm recently created link between category and todo from previous post", async () => {
+            return chai.request(baseUrl)
+                .get("todos/2/categories")
+                .then((res) => {
+                    expect(res).to.have.status(200);
+                    assert(res.body.categories[0].id, 1);
+                }).catch(err =>{
+                    console.log(err);
+                    assert.fail();
+                });
+            });
+    
+        });
+    describe('HEAD /todo:id/categories', () => {
         it('should confirm endpoint exists', async() => {
-            return chai.request(baseUrl).head("todos/1")
+            return chai.request(baseUrl).head("todos/1/categories")
             .then((res) => {
                 expect(res).to.have.status(200);
             }).catch((err) => {
@@ -87,45 +113,21 @@ describe('todo/:id', () => {
             })
         })
     });
-    describe('POST /todo:id', () => {
-        it('should amend instances of todo with specific ID using post', async() => {
-            return chai.request(baseUrl).post("todos/1")
-            .send(validTodo)
+});
+
+describe('todo/:id/categories', () => {
+    describe('DELETE /todo:id/categories/:id', () => {
+        it('should delete a specific link between category of specified id and todo of specified id', async() => {
+            return chai.request(baseUrl).delete("todos/2/categories/1")
             .then((res) => {
                 expect(res).to.have.status(200);
-            }).catch((err) => {
-                assert.fail();
-            })
-        }) 
-    });
-    describe('PUT /todo:id', () => {
-        it('should amend instances of todo with specific ID using put', async() => {
-            return chai.request(baseUrl).put("todos/2")
-            .send(validTodo)
-            .then((res) => {
-                expect(res).to.have.status(200);
-            }).catch((err) => {
-                assert.fail();
-            })
-        })
-    });
-    describe('DELETE /todo:id', () => {
-        it('deletes a specific todo instance identified by its id', async() => {
-            return chai.request(baseUrl).delete("todos/2")
-            .then((res) => {
-                expect(res).to.have.status(200);
-            }).catch((err) => {
-                assert.fail();
-            })
-        });
-        it('should not delete a non existing todo instance', async() => {
-            return chai.request(baseUrl).delete("todos/-1")
-            .then((res) => {
-                expect(res).to.have.status(404);
             }).catch((err) => {
                 console.log(err);
                 assert.fail();
             })
         });
-    });
-})
+    })
+});
+
+
+    
