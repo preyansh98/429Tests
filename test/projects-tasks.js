@@ -23,6 +23,21 @@ const sampleTodo = {
     description: "strud exercitation u"
 }
 
+before(function() {
+    this.timeout(10000);
+    const server = spawn('java', ["-jar", "./test/runTodoManagerRestAPI-1.5.5.jar"]);
+    return delay(2000);
+});
+
+after(async () => {
+
+    return new Promise((resolve, reject) => {
+        chai.request(baseUrl)
+            .get("shutdown")
+            .end(() =>resolve())
+    })
+})
+
 //POST PROJECT with a Task
 describe('projects', () => {
     describe('POST /projects: post a project', () => {
@@ -32,6 +47,7 @@ describe('projects', () => {
             .then( (res) => {
                 expect(res).to.have.status(201);
             }).catch( (err) => {
+                console.log(err);
                 assert.fail();
             })
         })
@@ -40,13 +56,14 @@ describe('projects', () => {
 
 //GET Project Tasks with ID
 describe('projects', () => {
-    describe('GET /projects/:id/tasks: get all tasks related to a project', () => {
+    describe('GET /projects/:id/mtasks: get all tasks related to a project', () => {
         it('should get all tasks from the project id', async() => {
             chai.request(baseUrl).get('projects/'+sampleProjectId+'/tasks')
             .then((res) => {
-                expect(res)
+                //expect(res)
             })
             .catch((err) => {
+                console.log(err);
                 assert.fail()
             })
         })

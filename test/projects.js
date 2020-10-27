@@ -22,6 +22,21 @@ const sampleTodo = {
     description: "strud exercitation u"
 }
 
+before(function() {
+    this.timeout(10000);
+    const server = spawn('java', ["-jar", "./test/runTodoManagerRestAPI-1.5.5.jar"]);
+    return delay(2000);
+});
+
+after(async () => {
+
+    return new Promise((resolve, reject) => {
+        chai.request(baseUrl)
+            .get("shutdown")
+            .end(() =>resolve())
+    })
+})
+
 //POST PROJECT
 describe('projects', () => {
     describe('POST /projects: post a project', () => {
